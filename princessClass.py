@@ -1,132 +1,98 @@
-#沒有破防的角色
-class Character:
-    def __init__(self,level):
+class Characters():
+    def __init__(self,level,characterList = [0,0,0,0,0,0,0,0,0]):
         self.level = level
-        self.skillHit = 0 #技能破防狀態
-        self.ubHit = 0 #ub破防狀態
-        self.skillHitRemainTime = 0 #技能破防剩餘時間
-        self.ubHitRemainTime = 0 #ub破防剩餘時間
-        self.skillHitPower = 0 #技能破防力
-        self.ubHitPower = 0 #ub破放力
+        self.skill1 = characterList[0]
+        self.skill1Coef = characterList[1]
+        self.skill1HitTime = characterList[2]
+        self.skill2 = characterList[3]
+        self.skill2Coef = characterList[4]
+        self.skill2HitTime = characterList[5]
+        self.ub = characterList[6]
+        self.ubCoef = characterList[7]
+        self.ubHitTime = characterList[8]
 
-    def checkSkill(self,skill):
-        return 0
-    def checkSkillHit(self):
-        if self.skillHit:
-            self.skillHitRemainTime -= 1
-            if self.skillHitRemainTime > 0:
-                return 0
-            else:
-                self.skillHit = 0
-                return self.skillHitPower
-        else:
-            return 0
-    def checkUbHit(self):
+        self.skill1Hit = 0 #技能1破防狀態
+        self.skill2Hit = 0 #技能2破防狀態
+        self.ubHit = 0 #ub破防狀態
+        self.skill1HitRemainTime = 0 #技能1破防剩餘時間
+        self.skill2HitRemainTime = 0 #技能2破防剩餘時間
+        self.ubHitRemainTime = 0 #ub破防剩餘時間
+        
+    def checkHit(self):
+        needDelete = 0
+        if self.skill1Hit:
+            self.skill1HitRemainTime -= 1
+            if self.skill1HitRemainTime == 0:
+                self.skill1Hit = 0
+                needDelete += float(self.skill1Coef) + float(self.skill1Coef) * float(self.level) #技能1破防力
+        if self.skill2Hit:
+            self.skill2HitRemainTime -= 1
+            if self.skill2HitRemainTime == 0:
+                self.skill2Hit = 0
+                needDelete += float(self.skill2Coef) + float(self.skill2Coef) * float(self.level) #技能2破防力
         if self.ubHit:
             self.ubHitRemainTime -= 1
-            if self.ubHitRemainTime > 0:
-                return 0
-            else:
+            if self.ubHitRemainTime == 0:
                 self.ubHit = 0
-                return self.ubHitPower
-        else:
-            return 0
-class Special(Character):
-    def __init__(self,level,skillComponent,skillHitTime,upSkillComponent,upSkillHitTime,defenseSkill,ubComponent,ubHitTime):
-        super().__init__(level)
-        self.skillComponent = skillComponent #技能係數
-        self.skillHitTime = skillHitTime #技能破防時間
-
-        self.upSkillComponent = upSkillComponent #升級技能係數
-        self.upSkillHitTime = upSkillHitTime #升級技能破防時間
-
-        self.defenseSkill = defenseSkill #破防技能名稱
-        self.ubComponent = ubComponent #ub係數
-        self.ubHitTime = ubHitTime #ub破防時間
-
-        self.skillHitPower = skillComponent + skillComponent * self.level #技能破防力
-        self.ubHitPower = ubComponent + ubComponent * self.level #ub破防力
-
-        self.upSkillHitPower = upSkillComponent + upSkillComponent * self.level #升級技能破防力
-
-        self.totalHitPower = 0 #破防量
-        self.skillHit = 0 #技能破防狀態
-        self.ubHit = 0 #ub破防狀態
-        self.skillHitRemainTime = 0 #技能破防剩餘時間
-        self.ubHitRemainTime = 0 #ub破防剩餘時間
+                needDelete += float(self.ubCoef) + float(self.ubCoef) * float(self.level) #ub破防力
+        return needDelete
     def checkSkill(self,skill):
-        if skill == self.defenseSkill: #技能
-            return self.skillUp()
-        else:
-            if skill == '0' or skill == 0:
+        if skill == '技能1':
+            if int(self.skill1) == 0:
                 return 0
             else:
-                if skill[-2:] == 'UB':
-                    if skill[0] == 'U':
-                        return self.ubUp() #ub
-                    else:
-                        return self.skillUp() + self.ubUp() #ub + 技能
-                else:
-                    return 0
-    def skillUp(self):
-        if self.skillHit:
+                return self.skill1Up()
+        elif skill == '技能2':
+            if self.skill2 == 0:
+                return 0
+            else:
+                return self.skill2Up()
+        elif skill == 'UB':
+            if int(self.ub) == 0:
+                return 0
+            else:
+                return self.ubUp()
+        else:
+            return 0
+
+    def skill1Up(self):
+        if self.skill1Hit:
             return 0
         else:
-            self.skillHit = 1
-            if self.ubHit:
-                self.skillHitRemainTime = self.upSkillHitTime #有ub效果
-                return self.upSkillHitPower
-            else:
-                self.skillHitRemainTime = self.skillHitTime #沒有ub效果
-                return self.skillHitPower
+            self.skill1Hit = 1
+            if 'or' in str(self.skill1Coef):
+                if self.ubHit == 1:
+                    self.skill1Coef = float(self.skill1Coef.split('or')[0][:-1])
+                else:
+                    self.skill1Coef = float(self.skill1Coef.split('or')[1][1:])
+            if 'or' in str(self.skill1HitTime):
+                if self.ubHit == 1:
+                    self.skill1HitTime = float(self.skill1HitTime.split('or')[0][:-1])
+                else:
+                    self.skill1HitTime = float(self.skill1HitTime.split('or')[1][1:])
+            self.skill1HitRemainTime = float(self.skill1HitTime)
+            return float(self.skill1Coef) + float(self.skill1Coef) * float(self.level) #技能1破防力
+    def skill2Up(self):
+        if self.skill2Hit:
+            return 0
+        else:
+            self.skill2Hit = 1
+            if 'or' in str(self.skill2Coef):
+                if self.ubHit == 1:
+                    self.skill2Coef = float(self.skill2Coef.split('or')[0][:-1])
+                else:
+                    self.skill2Coef = float(self.skill2Coef.split('or')[1][1:])
+            if 'or' in str(self.skill2HitTime):
+                if self.ubHit == 1:
+                    self.skill2HitTime = float(self.skill2HitTime.split('or')[0][:-1])
+                else:
+                    self.skill2HitTime = float(self.skill2HitTime.split('or')[1][1:])
+            self.skill2HitRemainTime = float(self.skill2HitTime)
+            return float(self.skill2Coef) + float(self.skill2Coef) * float(self.level) #技能2破防力
     def ubUp(self):
         if self.ubHit:
             return 0
         else:
             self.ubHit = 1
-            self.ubHitRemainTime = self.ubHitTime
-            return self.ubHitPower
-    
-class General(Character):
-    def __init__(self,level,skillComponent,skillHitTime,defenseSkill,ubComponent,ubHitTime):
-        super().__init__(level)
-        self.skillComponent = skillComponent #技能係數
-        self.skillHitTime = skillHitTime #技能破防時間
-        self.defenseSkill = defenseSkill #破防技能名稱
-        self.ubComponent = ubComponent #ub係數
-        self.ubHitTime = ubHitTime #ub破防時間
-
-        self.skillHitPower = skillComponent + skillComponent * self.level #技能破防力
-        self.ubHitPower = ubComponent + ubComponent * self.level #ub破放力
-        self.skillHit = 0 #技能破防狀態
-        self.ubHit = 0 #ub破防狀態
-        self.skillHitRemainTime = 0 #技能破防剩餘時間
-        self.ubHitRemainTime = 0 #ub破防剩餘時間
-    def checkSkill(self,skill):
-        if skill == self.defenseSkill: #技能
-            return self.skillUp()
-        else:
-            if skill == '0' or skill == 0:
-                return 0
-            else:
-                if skill[-2:] == 'UB':
-                    if skill[0] == 'U':
-                        return self.ubUp() #ub
-                    else:
-                        return self.skillUp() + self.ubUp() #ub + 技能
-                else:
-                    return 0
-    def skillUp(self):
-        if self.skillHit:
-            return 0
-        else:
-            self.skillHit = 1
-            self.skillHitRemainTime = self.skillHitTime
-            return self.skillHitPower
-    def ubUp(self):
-        if self.ubHit:
-            return 0
-        else:
-            self.ubHit = 1
-            self.ubHitRemainTime = self.ubHitTime
-            return self.ubHitPower
+            self.ubHitRemainTime = float(self.ubHitTime)
+            return float(self.ubCoef) + float(self.ubCoef) * float(self.level) #ub破防力

@@ -10,36 +10,9 @@ warnings.filterwarnings("ignore")
 
 # In[2]:
 
-def startDraw(team,clickList):
+def startDraw(level,selectData,nameList):
 
-    #read time data
-    data = pd.read_csv('timeData2.csv')
-    del data['Unnamed: 0']
-    selectData = pd.DataFrame(columns = data.columns)
-
-    #add select rows
-    for i in range(len(team)):
-        for j in range(data.shape[0]):
-            if team[i] == data.loc[j][0]:
-                selectData.loc[i] = data.loc[j]
-
-    #add UB
-    for click in clickList:
-        value = selectData.loc[click[0]][click[1] + 1]
-        if value == '0' or value == 0:
-            value = 'UB'
-        else:
-            value += ' + UB'
-        selectData.iloc[click[0],click[1] + 1] = value
-    # for i in range(data.shape[0]):
-    #     if data.loc[i][0] in team:
-    #         selectData.loc[i] = data.loc[i]
-
-    #rename index
-    selectData.index = [0,1,2,3,4]
-    nameList = selectData['Name'].tolist()
-
-    countList = getDefenseTime(selectData,nameList)
+    countList = getDefenseTime(level,selectData,nameList)
 
     gntTimeList = getSkillTime(selectData,nameList)
 
@@ -84,37 +57,40 @@ def startDraw(team,clickList):
       
     # Setting graph attribute 
     gnt.grid(True) 
-      
+    
+    sk1 = '#FF0000'
+    sk2 = '#0000FF'
+    ub = '#008000' 
     # Declaring a bar in schedule 
-    gnt.broken_barh(gntTimeList[0][0], (49, 2), facecolors =('#ff7f0e'))
+    gnt.broken_barh(gntTimeList[0][0], (49, 2), facecolors =(sk1))
 
-    gnt.broken_barh(gntTimeList[0][1], (49, 2), facecolors =('#bcbd22'))
+    gnt.broken_barh(gntTimeList[0][1], (49, 2), facecolors =(sk2))
 
-    gnt.broken_barh(gntTimeList[0][2], (49, 2), facecolors =('red'))
+    gnt.broken_barh(gntTimeList[0][2], (49, 2), facecolors =(ub))
 
-    gnt.broken_barh(gntTimeList[1][0], (39, 2), facecolors =('#ff7f0e'))
+    gnt.broken_barh(gntTimeList[1][0], (39, 2), facecolors =(sk1))
 
-    gnt.broken_barh(gntTimeList[1][1], (39, 2), facecolors =('#bcbd22'))
+    gnt.broken_barh(gntTimeList[1][1], (39, 2), facecolors =(sk2))
 
-    gnt.broken_barh(gntTimeList[1][2], (39, 2), facecolors =('red'))
+    gnt.broken_barh(gntTimeList[1][2], (39, 2), facecolors =(ub))
       
-    gnt.broken_barh(gntTimeList[2][0], (29, 2), facecolors =('#ff7f0e'))
+    gnt.broken_barh(gntTimeList[2][0], (29, 2), facecolors =(sk1))
 
-    gnt.broken_barh(gntTimeList[2][1], (29, 2), facecolors =('#bcbd22'))
+    gnt.broken_barh(gntTimeList[2][1], (29, 2), facecolors =(sk2))
 
-    gnt.broken_barh(gntTimeList[2][2], (29, 2), facecolors =('red'))
+    gnt.broken_barh(gntTimeList[2][2], (29, 2), facecolors =(ub))
                      
-    gnt.broken_barh(gntTimeList[3][0], (19, 2), facecolors =('#ff7f0e'))
+    gnt.broken_barh(gntTimeList[3][0], (19, 2), facecolors =(sk1))
 
-    gnt.broken_barh(gntTimeList[3][1], (19, 2), facecolors =('#bcbd22'))
+    gnt.broken_barh(gntTimeList[3][1], (19, 2), facecolors =(sk2))
 
-    gnt.broken_barh(gntTimeList[3][2], (19, 2), facecolors =('red'))
+    gnt.broken_barh(gntTimeList[3][2], (19, 2), facecolors =(ub))
         
-    gnt.broken_barh(gntTimeList[4][0], (9, 2), facecolors =('#ff7f0e'))
+    gnt.broken_barh(gntTimeList[4][0], (9, 2), facecolors =(sk1))
 
-    gnt.broken_barh(gntTimeList[4][1], (9, 2), facecolors =('#bcbd22'))
+    gnt.broken_barh(gntTimeList[4][1], (9, 2), facecolors =(sk2))
 
-    gnt.broken_barh(gntTimeList[4][2], (9, 2), facecolors =('red'))
+    gnt.broken_barh(gntTimeList[4][2], (9, 2), facecolors =(ub))
 
     plt.savefig("combine.png",bbox_inches='tight',
                 pad_inches=0,
