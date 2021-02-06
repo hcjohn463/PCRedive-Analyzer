@@ -2,8 +2,7 @@ import pandas as pd
 from princessClass import *
 
 def getDefenseTime(level,selectData,nameList):
-
-    #setting level and class
+    
     data = pd.read_csv('./data/defense_0125.csv')
 
     defenseDict = {}
